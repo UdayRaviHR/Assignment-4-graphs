@@ -1,0 +1,238 @@
+1)Breadth First Traversal for a Graph?
+:
+from collections import deque
+
+def bfs(graph, start):
+    # Initialize a set to keep track of visited vertices
+    visited = set()
+    
+    # Initialize a queue and enqueue the starting vertex
+    queue = deque([start])
+    
+    # Traverse the graph using BFS
+    while queue:
+        # Dequeue a vertex from the queue
+        vertex = queue.popleft()
+        
+        # Visit the vertex if it has not been visited before
+        if vertex not in visited:
+            print(vertex, end=' ')
+            
+            # Mark the vertex as visited
+            visited.add(vertex)
+            
+            # Enqueue the adjacent vertices
+            queue.extend(graph[vertex] - visited)
+# Example usage
+# Create an example graph as an adjacency list
+graph = {
+    'A': {'B', 'C'},
+    'B': {'A', 'D', 'E'},
+    'C': {'A', 'F'},
+    'D': {'B'},
+    'E': {'B', 'F'},
+    'F': {'C', 'E'}
+}
+
+# Perform a BFS traversal of the graph starting from vertex 'A'
+start = 'A'
+bfs(graph, start)
+
+
+ 
+2)Depth First Traversal for a Graph?
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    
+    visited.add(start)
+    print(start, end=' ')
+    
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+# Example usage
+# Create an example graph as an adjacency list
+graph = {
+    'A': {'B', 'C'},
+    'B': {'A', 'D', 'E'},
+    'C': {'A', 'F'},
+    'D': {'B'},
+    'E': {'B', 'F'},
+    'F': {'C', 'E'}
+}
+
+# Perform a DFS traversal of the graph starting from vertex 'A'
+start = 'A'
+dfs(graph, start)
+
+
+3)Count the number of nodes at given level in a tree using BFS?
+from collections import deque
+
+def count_nodes_at_level(root, level):
+    # Edge case: empty tree
+    if not root:
+        return 0
+    
+    # Initialize a queue and add the root node to it
+    queue = deque()
+    queue.append(root)
+    
+    # Initialize a variable to keep track of the current level
+    current_level = 0
+    
+    # Initialize a variable to count the nodes at the given level
+    count = 0
+    
+    # Traverse the tree using BFS
+    while queue:
+        # Increment the current level
+        current_level += 1
+        
+        # Get the number of nodes at the current level
+        level_size = len(queue)
+        
+        # Check if the current level matches the given level
+        if current_level == level:
+            count = level_size
+        
+        # Enqueue the children of the nodes at the current level
+        for _ in range(level_size):
+            node = queue.popleft()
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+    
+    return count
+# Example usage
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+# Create a binary tree
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+root.left.left = TreeNode(4)
+root.left.right = TreeNode(5)
+root.right.left = TreeNode(6)
+root.right.right = TreeNode(7)
+
+# Count the number of nodes at level 2
+level = 2
+count = count_nodes_at_level(root, level)
+print(f"Number of nodes at level {level}: {count}")
+
+
+4)Count number of trees in a forest?
+def count_trees(forest):
+    tree_count = 0
+    for row in forest:
+        for tree in row:
+            if tree == "tree":
+                tree_count += 1
+    return tree_count
+# Example usage
+forest = [
+    ["tree", "tree", "rock", "tree"],
+    ["tree", "rock", "tree", "tree"],
+    ["tree", "tree", "tree", "tree"],
+    ["rock", "rock", "rock", "rock"]
+]
+
+num_trees = count_trees(forest)
+print("Number of trees:", num_trees)
+
+
+5)Detect Cycle in a Directed Graph?
+def has_cycle(graph):
+    visited = set()
+    rec_stack = set()
+
+    def dfs(node):
+        visited.add(node)
+        rec_stack.add(node)
+
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                if dfs(neighbor):
+                    return True
+            elif neighbor in rec_stack:
+                return True
+
+        rec_stack.remove(node)
+        return False
+
+    for node in graph:
+        if node not in visited:
+            if dfs(node):
+                return True
+
+    return False
+# Example usage
+graph = {0: [1], 1: [2], 2: [0, 3], 3: [4], 4: []}
+
+if has_cycle(graph):
+    print("The graph contains a cycle.")
+else:
+    print("The graph does not contain a cycle.")
+
+
+
+
+6)**Implement n-Queen’s Problem?
+def solve_n_queens(n):
+    def is_safe(board, row, col):
+        # Check if there is a queen in the same row
+        for i in range(col):
+            if board[row][i] == 1:
+                return False
+
+        # Check if there is a queen in the upper left diagonal
+        for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+            if board[i][j] == 1:
+                return False
+
+        # Check if there is a queen in the lower left diagonal
+        for i, j in zip(range(row, n, 1), range(col, -1, -1)):
+            if board[i][j] == 1:
+                return False
+
+        return True
+
+    def backtrack(board, col):
+        if col >= n:
+            return True
+
+        for row in range(n):
+            if is_safe(board, row, col):
+                board[row][col] = 1
+
+                if backtrack(board, col+1):
+                    return True
+
+                board[row][col] = 0
+
+        return False
+
+    # Initialize an empty board
+    board = [[0 for _ in range(n)] for _ in range(n)]
+
+    if backtrack(board, 0):
+        return board
+
+    return None
+# Example usage
+n = 4
+solution = solve_n_queens(n)
+
+if solution is None:
+    print("No solution exists.")
+else:
+    for row in solution:
+        print(row)
+
